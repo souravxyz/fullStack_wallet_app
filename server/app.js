@@ -8,6 +8,7 @@ app.use(
     origin: [
       "http://localhost:5173",
       "https://wallet-app-frontend-0y5l.onrender.com",
+      "https://wallet-app-frontend-0y5l.onrender.com",
     ],
     credentials: true,
   })
