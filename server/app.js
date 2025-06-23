@@ -8,6 +8,17 @@ app.use(
     origin: [
       "http://localhost:5173",
       "https://wallet-app-frontend-0y5l.onrender.com",
+    ],
+    credentials: true,
+  })
+);
+
+// 🔥 Handle preflight OPTIONS requests globally
+app.options(
+  "*",
+  cors({
+    origin: [
+      "http://localhost:5173",
       "https://wallet-app-frontend-0y5l.onrender.com",
     ],
     credentials: true,
