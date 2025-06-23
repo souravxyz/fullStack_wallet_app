@@ -8,6 +8,7 @@ import {
   FiMail,
   FiUser,
   FiKey,
+  FiLogIn,
 } from "react-icons/fi";
 import getImageUrl from "../utils/getImageUrl";
 import { useUser } from "../hooks/useUser";
@@ -56,54 +57,64 @@ export function Navbar() {
           <FiCreditCard size={20} />
         </Link>
 
-        {/* Profile Button */}
-        <div
-          className="p-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full shadow-lg hover:scale-110 transition-all cursor-pointer relative"
-          onClick={() => setShowProfile(!showProfile)}
-        >
-          <div className="w-10 h-10 rounded-full overflow-hidden">
-            <img
-              src={getImageUrl(user?.profilePic)}
-              alt="Profile"
-              className="w-full h-full object-cover"
-            />
-          </div>
-        </div>
-
-        {/* Profile Popup */}
-        {showProfile && (
-          <div className="absolute bottom-16 left-1/2 transform -translate-x-1/2 bg-white dark:bg-gray-900 p-4 rounded-xl shadow-md w-64 z-50 border dark:border-gray-700">
-            <div className="flex flex-col items-center space-y-2 text-center">
-              <img
-                src={getImageUrl(user?.profilePic)}
-                alt="User"
-                className="w-16 h-16 rounded-full object-cover"
-              />
-              <div className="text-sm text-gray-800 dark:text-white flex items-center gap-2">
-                <FiUser /> {user?.name}
+        {/* Auth check: if user is logged in, show profile avatar; else show login button */}
+        {user ? (
+          <>
+            {/* Profile Button */}
+            <div
+              className="p-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full shadow-lg hover:scale-110 transition-all cursor-pointer relative"
+              onClick={() => setShowProfile(!showProfile)}
+            >
+              <div className="w-10 h-10 rounded-full overflow-hidden">
+                <img
+                  src={getImageUrl(user?.profilePic)}
+                  alt="Profile"
+                  className="w-full h-full object-cover"
+                />
               </div>
-              <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-2">
-                <FiMail /> {user?.email}
-              </div>
-
-              {/* Reset Password */}
-              <Link
-                to="/change-password"
-                onClick={() => setShowProfile(false)}
-                className="text-blue-500 hover:underline flex items-center gap-1 text-sm"
-              >
-                <FiKey /> Change Password
-              </Link>
-
-              {/* Logout */}
-              <button
-                onClick={handleLogout}
-                className="text-red-500 hover:underline flex items-center gap-1"
-              >
-                <FiLogOut /> Logout
-              </button>
             </div>
-          </div>
+
+            {/* Profile Popup */}
+            {showProfile && (
+              <div className="absolute bottom-16 left-1/2 transform -translate-x-1/2 bg-white dark:bg-gray-900 p-4 rounded-xl shadow-md w-64 z-50 border dark:border-gray-700">
+                <div className="flex flex-col items-center space-y-2 text-center">
+                  <img
+                    src={getImageUrl(user?.profilePic)}
+                    alt="User"
+                    className="w-16 h-16 rounded-full object-cover"
+                  />
+                  <div className="text-sm text-gray-800 dark:text-white flex items-center gap-2">
+                    <FiUser /> {user?.name}
+                  </div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-2">
+                    <FiMail /> {user?.email}
+                  </div>
+
+                  <Link
+                    to="/change-password"
+                    onClick={() => setShowProfile(false)}
+                    className="text-blue-500 hover:underline flex items-center gap-1 text-sm"
+                  >
+                    <FiKey /> Change Password
+                  </Link>
+
+                  <button
+                    onClick={handleLogout}
+                    className="text-red-500 hover:underline flex items-center gap-1"
+                  >
+                    <FiLogOut /> Logout
+                  </button>
+                </div>
+              </div>
+            )}
+          </>
+        ) : (
+          <Link
+            to="/login"
+            className="p-3 rounded-xl text-gray-600 dark:text-gray-400 hover:bg-white/20"
+          >
+            <FiLogIn size={20} />
+          </Link>
         )}
 
         {/* Notes */}
