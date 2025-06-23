@@ -1,0 +1,11 @@
+/* Ensure Tailwind CSS is set up with PostCSS for these directives to work */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Glass morphism */
+.glass-effect {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
