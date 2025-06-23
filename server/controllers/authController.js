@@ -18,7 +18,7 @@ const generateToken = (id) => {
 // Register User
 exports.register = async (req, res) => {
   const { name, email, password } = req.body;
-  const profilePic = req.file?.filename;
+  const profilePic = req.file ? `/uploads/${req.file.filename}` : null;
 
   try {
     const userExists = await User.findOne({ email });
@@ -39,7 +39,9 @@ exports.register = async (req, res) => {
       _id: user._id,
       name: user.name,
       email: user.email,
-      profilePic: user.profilePic,
+      profilePic: profilePic
+        ? `${req.protocol}://${req.get("host")}${profilePic}`
+        : null,
       token: generateToken(user._id),
     });
   } catch (err) {
@@ -151,7 +153,6 @@ exports.resetPassword = async (req, res) => {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
-
 
 // Change Password (for logged-in users)
 exports.changePassword = async (req, res) => {

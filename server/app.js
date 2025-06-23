@@ -3,7 +3,6 @@ const cors = require("cors");
 const path = require("path");
 const app = express();
 
-// Middlewares
 app.use(
   cors({
     origin: [
@@ -17,10 +16,14 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve static files
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+// Serve image files depending on environment
+if (process.env.NODE_ENV === "production") {
+  app.use("/uploads", express.static("/tmp"));
+} else {
+  app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+}
 
-// Routes (after middlewares!)
+// Routes
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/wallet", require("./routes/walletRoutes"));
 app.use("/api/notes", require("./routes/noteRoutes"));
