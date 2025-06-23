@@ -6,7 +6,10 @@ const app = express();
 // Middlewares
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || "http://localhost:5173",
+    origin: [
+      "http://localhost:5173",
+      "https://wallet-app-frontend-0y5l.onrender.com",
+    ],
     credentials: true,
   })
 );
