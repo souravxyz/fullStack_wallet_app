@@ -18,6 +18,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import { toast } from "react-hot-toast"; // npm install react-hot-toast
 import { useUser } from "../hooks/useUser";
+import getImageUrl from "../utils/getImageUrl";
 
 export function Dashboard() {
   const { data: wallet, isLoading: loadingWallet } = useWalletItems();
@@ -571,7 +572,7 @@ export function Dashboard() {
                   {note.image && (
                     <div className="mb-3 overflow-hidden rounded-xl">
                       <img
-                        src={`http://localhost:5000${note.image}`}
+                        src={getImageUrl(note.image)}
                         alt="note"
                         className="w-full h-24 object-cover hover:scale-105 transition-transform duration-300"
                       />
