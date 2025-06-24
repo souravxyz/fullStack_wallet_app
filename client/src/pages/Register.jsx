@@ -9,11 +9,10 @@ import {
   FiEye,
   FiEyeOff,
 } from "react-icons/fi";
-import apiHandler from "../api/apiHandler";
-import endpoints from "../api/endpoints";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useRef } from "react";
+import { useRegister } from "../hooks/useAuth";
 
 export function Register() {
   const {
@@ -49,27 +48,26 @@ export function Register() {
     setShowPassword(!showPassword);
   };
 
+  const registerMutation = useRegister();
+
   const onSubmit = async (data) => {
-    try {
-      const formData = new FormData();
-      formData.append("name", data.name);
-      formData.append("email", data.email);
-      formData.append("password", data.password);
-      if (selectedFile) {
-        formData.append("profilePic", selectedFile);
-      }
-
-      const res = await apiHandler.post(endpoints.auth.register, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
-      localStorage.setItem("token", res.token);
-      navigate("/login");
-    } catch (err) {
-      alert(err.response?.data?.message || "Something went wrong");
+    const formData = new FormData();
+    formData.append("name", data.name);
+    formData.append("email", data.email);
+    formData.append("password", data.password);
+    if (selectedFile) {
+      formData.append("profilePic", selectedFile);
     }
+
+    registerMutation.mutate(formData, {
+      onSuccess: (res) => {
+        localStorage.setItem("token", res.token);
+        navigate("/login");
+      },
+      onError: (err) => {
+        alert(err.response?.data?.message || "Something went wrong");
+      },
+    });
   };
 
   return (

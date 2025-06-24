@@ -3,24 +3,10 @@ const cors = require("cors");
 const path = require("path");
 const app = express();
 
+// CORS config (add Render frontend domain if you have one)
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173",
-      "https://wallet-app-frontend-0y5l.onrender.com",
-    ],
-    credentials: true,
-  })
-);
-
-// 🔥 Handle preflight OPTIONS requests globally
-app.options(
-  "*",
-  cors({
-    origin: [
-      "http://localhost:5173",
-      "https://wallet-app-frontend-0y5l.onrender.com",
-    ],
+    origin: [process.env.CLIENT_URL, "http://localhost:5173"],
     credentials: true,
   })
 );
@@ -28,14 +14,10 @@ app.options(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve image files depending on environment
-if (process.env.NODE_ENV === "production") {
-  app.use("/uploads", express.static("/tmp"));
-} else {
-  app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-}
+// Serve uploaded images (local uploads folder)
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-// Routes
+// API routes
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/wallet", require("./routes/walletRoutes"));
 app.use("/api/notes", require("./routes/noteRoutes"));

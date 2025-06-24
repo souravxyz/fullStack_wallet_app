@@ -15,25 +15,32 @@ import { useUser } from "../hooks/useUser";
 import { useState } from "react";
 import apiHandler from "../api/apiHandler";
 import endpoints from "../api/endpoints";
+import { useQueryClient } from "@tanstack/react-query";
 
 export function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { data: user } = useUser();
   const [showProfile, setShowProfile] = useState(false);
 
   const isActive = (path) => location.pathname === path;
 
   const handleLogout = async () => {
-    await apiHandler.get(endpoints.auth.logout);
-    localStorage.removeItem("token");
-    navigate("/login");
+    try {
+      await apiHandler.get(endpoints.auth.logout);
+      localStorage.removeItem("token");
+      queryClient.removeQueries(["user"]);
+      setShowProfile(false);
+      navigate("/login");
+    } catch (err) {
+      console.error("Logout failed:", err.message);
+    }
   };
 
   return (
     <nav className="glass-effect fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-white/30 dark:bg-gray-800/30 backdrop-blur-xl p-2 rounded-2xl shadow-lg border border-white/20 dark:border-gray-700/30 z-50">
       <div className="flex items-center justify-around space-x-2 relative">
-        {/* Home */}
         <Link
           to="/"
           className={`p-3 rounded-xl ${
@@ -45,7 +52,6 @@ export function Navbar() {
           <FiHome size={20} />
         </Link>
 
-        {/* Wallet */}
         <Link
           to="/wallet/add"
           className={`p-3 rounded-xl ${
@@ -57,10 +63,8 @@ export function Navbar() {
           <FiCreditCard size={20} />
         </Link>
 
-        {/* Auth check: if user is logged in, show profile avatar; else show login button */}
         {user ? (
           <>
-            {/* Profile Button */}
             <div
               className="p-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full shadow-lg hover:scale-110 transition-all cursor-pointer relative"
               onClick={() => setShowProfile(!showProfile)}
@@ -74,7 +78,6 @@ export function Navbar() {
               </div>
             </div>
 
-            {/* Profile Popup */}
             {showProfile && (
               <div className="absolute bottom-16 left-1/2 transform -translate-x-1/2 bg-white dark:bg-gray-900 p-4 rounded-xl shadow-md w-64 z-50 border dark:border-gray-700">
                 <div className="flex flex-col items-center space-y-2 text-center">
@@ -117,7 +120,6 @@ export function Navbar() {
           </Link>
         )}
 
-        {/* Notes */}
         <Link
           to="/notes/add"
           className={`p-3 rounded-xl ${
@@ -129,7 +131,6 @@ export function Navbar() {
           <FiFileText size={20} />
         </Link>
 
-        {/* Family */}
         <Link
           to="/family"
           className={`p-3 rounded-xl ${

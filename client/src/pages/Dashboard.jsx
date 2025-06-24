@@ -7,6 +7,8 @@ import {
   FiFileText,
   FiCopy,
   FiCheck,
+  FiLogIn,
+  FiUserPlus,
   FiChevronDown,
 } from "react-icons/fi";
 import { useWalletItems, useDeleteWalletItem } from "../hooks/useWallet";
@@ -23,7 +25,7 @@ export function Dashboard() {
   const deleteWalletItem = useDeleteWalletItem();
   const deleteNote = useDeleteNote();
   const [copiedItems, setCopiedItems] = useState({});
-    const { data: user, isLoading: loadingUser } = useUser();
+  const { data: user, isLoading: loadingUser } = useUser();
   const [expandedWalletId, setExpandedWalletId] = useState(null);
 
   const handleCopy = (text, itemId) => {
@@ -36,7 +38,91 @@ export function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50/50 via-purple-50/50 to-pink-50/50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-700 p-4 md:p-8 backdrop-blur-lg">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50/50 via-purple-50/50 to-pink-50/50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-700 p-4 md:p-8 backdrop-blur-lg relative">
+      {/* Add this Auth Overlay right here */}
+      <AnimatePresence>
+        {!loadingUser && !user && (
+          <motion.div
+            initial={{ opacity: 0, backdropFilter: "blur(0px)" }}
+            animate={{ opacity: 1, backdropFilter: "blur(10px)" }}
+            exit={{ opacity: 0, backdropFilter: "blur(0px)" }}
+            transition={{ duration: 0.5 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/20 dark:bg-black/50"
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="bg-white dark:bg-gray-800 rounded-3xl p-8 max-w-md w-full shadow-2xl border border-white/30 dark:border-gray-700/30 relative overflow-hidden"
+            >
+              <div className="absolute -top-20 -right-20 w-40 h-40 rounded-full bg-blue-500/10 blur-xl"></div>
+              <div className="absolute -bottom-20 -left-20 w-40 h-40 rounded-full bg-purple-500/10 blur-xl"></div>
+
+              <div className="relative z-10 text-center">
+                <motion.div
+                  animate={{
+                    rotate: [0, 10, -10, 0],
+                    y: [0, -5, 5, 0],
+                  }}
+                  transition={{
+                    repeat: Infinity,
+                    duration: 4,
+                    ease: "easeInOut",
+                  }}
+                  className="mx-auto w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center mb-6 shadow-lg"
+                >
+                  <FiCreditCard className="text-white" size={32} />
+                </motion.div>
+
+                <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">
+                  Welcome to SecureVault
+                </h2>
+                <p className="text-gray-600 dark:text-gray-300 mb-6">
+                  Please register or log in to access your secure wallet and
+                  notes.
+                </p>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <Link
+                      to="/register"
+                      className="flex items-center justify-center px-4 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-medium shadow-md hover:shadow-lg transition-all"
+                    >
+                      <FiUserPlus className="mr-2" />
+                      Register
+                    </Link>
+                  </motion.div>
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <Link
+                      to="/login"
+                      className="flex items-center justify-center px-4 py-3 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-xl font-medium shadow-md hover:shadow-lg transition-all"
+                    >
+                      <FiLogIn className="mr-2" />
+                      Login
+                    </Link>
+                  </motion.div>
+                </div>
+
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.8 }}
+                  className="text-xs text-gray-400 dark:text-gray-500 mt-6"
+                >
+                  Your data is encrypted and secure with us
+                </motion.p>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Header Section */}
       <motion.header
         initial={{ opacity: 0, y: -20 }}
@@ -46,9 +132,9 @@ export function Dashboard() {
       >
         <div className="flex flex-col md:flex-row md:items-center md:justify-between">
           <div>
-             <motion.h2 className="text-3xl font-bold text-gray-800 dark:text-white/90 mb-1">
-      {loadingUser ? 'Loading...' : `${user?.name || 'User'}'s Wallet`}
-    </motion.h2>
+            <motion.h2 className="text-3xl font-bold text-gray-800 dark:text-white/90 mb-1">
+              {loadingUser ? "Loading..." : `${user?.name || "User"}'s Wallet`}
+            </motion.h2>
             <p className="text-blue-500/80 dark:text-blue-400/80 font-medium">
               Your digital vault
             </p>
@@ -71,7 +157,11 @@ export function Dashboard() {
       </motion.header>
 
       {/* Main Content */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div
+        className={`grid grid-cols-1 lg:grid-cols-2 gap-6 ${
+          !user && !loadingUser ? "filter blur-sm pointer-events-none" : ""
+        }`}
+      >
         {/* Wallet Items Section */}
         <motion.section
           initial={{ opacity: 0, y: 20 }}

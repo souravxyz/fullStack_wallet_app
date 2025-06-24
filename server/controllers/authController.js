@@ -28,12 +28,14 @@ exports.register = async (req, res) => {
     const user = await User.create({ name, email, password, profilePic });
 
     // Send welcome email
-    const clientUrl = process.env.CLIENT_URL || "http://localhost:3000";
+    const clientUrl = process.env.CLIENT_URL || "http://localhost:5173";
+
     await sendEmail({
       to: user.email,
       subject: "Welcome to Wallet App!",
       html: welcomeEmail(user.name, clientUrl),
     });
+    console.log("✅ EMAIL LOGIN URL:", clientUrl);
 
     res.status(201).json({
       _id: user._id,
@@ -78,7 +80,9 @@ exports.getProfile = async (req, res) => {
       user: {
         name: user.name,
         email: user.email,
-        profilePic: user.profilePic,
+        profilePic: user.profilePic
+          ? `${req.protocol}://${req.get("host")}${user.profilePic}`
+          : null,
       },
     });
   } catch (error) {
@@ -101,7 +105,7 @@ exports.forgetPassword = async (req, res) => {
     user.resetPasswordExpire = Date.now() + 10 * 60 * 1000; // 10 minutes
     await user.save({ validateBeforeSave: false });
 
-    const clientUrl = process.env.CLIENT_URL || "http://localhost:3000";
+    const clientUrl = process.env.CLIENT_URL || "http://localhost:5173";
     const resetUrl = `${clientUrl}/reset-password/${resetToken}`;
 
     await sendEmail({

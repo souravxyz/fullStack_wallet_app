@@ -1,22 +1,25 @@
-// pages/ResetPassword.jsx
 import { useForm } from "react-hook-form";
 import { useParams, useNavigate } from "react-router-dom";
-import apiHandler from "../api/apiHandler";
-import endpoints from "../api/endpoints";
 
-export  function ResetPassword() {
+import { toast } from "react-hot-toast";
+import { useResetPassword } from "../hooks/useAuth";
+
+export function ResetPassword() {
   const { token } = useParams();
   const { register, handleSubmit } = useForm();
   const navigate = useNavigate();
+  const resetPasswordMutation = useResetPassword(token);
 
-  const onSubmit = async (data) => {
-    try {
-      await apiHandler.post(endpoints.auth.resetPassword(token), data);
-      toast.success("Password updated successfully.");
-      navigate("/login");
-    } catch (err) {
-      toast.error(err.response?.data?.message || "Reset failed");
-    }
+  const onSubmit = (data) => {
+    resetPasswordMutation.mutate(data, {
+      onSuccess: () => {
+        toast.success("Password updated successfully.");
+        navigate("/login");
+      },
+      onError: (err) => {
+        toast.error(err.response?.data?.message || "Reset failed");
+      },
+    });
   };
 
   return (
