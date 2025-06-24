@@ -34,7 +34,16 @@ exports.getNotes = async (req, res) => {
     const notes = await Note.find({ user: req.user._id }).sort({
       createdAt: -1,
     });
-    res.json(notes);
+
+    const updatedNotes = notes.map((note) => {
+      const noteObj = note.toObject();
+      noteObj.image = noteObj.image
+        ? `${req.protocol}://${req.get("host")}${noteObj.image}`
+        : null;
+      return noteObj;
+    });
+
+    res.json(updatedNotes);
   } catch (err) {
     res.status(500).json({ message: "Server error", error: err.message });
   }
