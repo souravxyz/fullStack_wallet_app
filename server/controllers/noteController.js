@@ -4,20 +4,24 @@ const Note = require('../models/Note');
 exports.createNote = async (req, res) => {
   try {
     const { title, content } = req.body;
-    const image = req.file ? `/uploads/${req.file.filename}` : null;
+
+    const image = req.file
+      ? `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`
+      : null;
 
     const note = await Note.create({
       user: req.user._id,
       title,
       content,
-      image
+      image,
     });
 
     res.status(201).json(note);
   } catch (err) {
-    res.status(500).json({ message: 'Server error', error: err.message });
+    res.status(500).json({ message: "Server error", error: err.message });
   }
 };
+
 
 // Get notes
 exports.getNotes = async (req, res) => {
