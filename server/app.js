@@ -4,13 +4,17 @@ const path = require("path");
 const app = express();
 
 // CORS config (add Render frontend domain if you have one)
+const allowedOrigins = [
+  process.env.CLIENT_URL || "https://wallet-app-frontend-xoft.onrender.com",
+  "http://localhost:5173",
+];
+
 app.use(
   cors({
-    origin: [process.env.CLIENT_URL, "http://localhost:5173"],
+    origin: allowedOrigins,
     credentials: true,
   })
 );
-
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
